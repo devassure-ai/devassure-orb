@@ -80,6 +80,14 @@ echo "DevAssure CLI version:"
 devassure version
 
 resolved_token="$PARAM_TOKEN"
+if [[ "$resolved_token" =~ ^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$ ]]; then
+  env_var_name="${BASH_REMATCH[1]}"
+  resolved_token="${!env_var_name:-}"
+elif [[ "$resolved_token" =~ ^\$([A-Za-z_][A-Za-z0-9_]*)$ ]]; then
+  env_var_name="${BASH_REMATCH[1]}"
+  resolved_token="${!env_var_name:-}"
+fi
+
 if [ -z "$resolved_token" ]; then
   resolved_token="${DEVASSURE_TOKEN:-}"
 fi

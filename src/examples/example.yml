@@ -11,7 +11,7 @@ usage:
       steps:
         - checkout
         - devassure/devassure:
-            token: $DEVASSURE_TOKEN
+            token: ${DEVASSURE_TOKEN}
             command: test
             source: << pipeline.git.branch >>
             target: main

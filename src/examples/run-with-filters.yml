@@ -8,7 +8,7 @@ usage:
     devassure-filtered-run:
       jobs:
         - devassure/devassure:
-            token: $DEVASSURE_TOKEN
+            token: ${DEVASSURE_TOKEN}
             command: run
             path: e2e
             filter: smoke
