@@ -102,7 +102,7 @@ steps:
       condition: << parameters.checkout >>
       steps:
         - checkout
-  - run-devassure:
+  - devassure:
       command: << parameters.command >>
       token: << parameters.token >>
       path: << parameters.path >>

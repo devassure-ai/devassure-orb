@@ -1,12 +1,15 @@
 description: >
-  Run DevAssure test mode with branch-aware configuration and score gate.
+  Run DevAssure as a command step inside a custom CircleCI job.
 usage:
   version: 2.1
   orbs:
     devassure: devassure/devassure@x.y.z
-  workflows:
-    devassure-validation:
-      jobs:
+  jobs:
+    devassure-custom-job:
+      docker:
+        - image: cimg/node:24.4
+      steps:
+        - checkout
         - devassure/devassure:
             token: $DEVASSURE_TOKEN
             command: test
@@ -15,3 +18,7 @@ usage:
             minimum_score: "80"
             workers: "2"
             url: "https://example.com"
+  workflows:
+    devassure-step-example:
+      jobs:
+        - devassure-custom-job
