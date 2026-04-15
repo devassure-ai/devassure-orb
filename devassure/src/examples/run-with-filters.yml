@@ -1,0 +1,22 @@
+description: >
+  Run DevAssure in run mode with test filters and environment options.
+usage:
+  version: 2.1
+  orbs:
+    devassure: devassure/devassure@x.y.z
+  workflows:
+    devassure-filtered-run:
+      jobs:
+        - devassure/devassure:
+            token: $DEVASSURE_TOKEN
+            command: run
+            path: e2e
+            filter: smoke
+            query: "checkout flow"
+            tag: nightly
+            priority: high
+            folder: regression
+            url: "https://example.com"
+            environment: qa
+            workers: "2"
+            headless: false

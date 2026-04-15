@@ -1,0 +1,114 @@
+description: >
+  Install and run DevAssure CLI commands with branch checks, summary, score validation, and optional report archiving.
+parameters:
+  command:
+    type: enum
+    enum: ["setup", "test", "run", "summary", "archive", "archive-report"]
+    default: "test"
+    description: DevAssure command to execute.
+  token:
+    type: string
+    default: ""
+    description: DevAssure token. If empty, falls back to DEVASSURE_TOKEN.
+  path:
+    type: string
+    default: ""
+    description: Project path used by test/run commands.
+  source:
+    type: string
+    default: ""
+    description: Source branch used by test command.
+  target:
+    type: string
+    default: ""
+    description: Target branch used by test command.
+  default_branch:
+    type: string
+    default: ""
+    description: Default branch name used when target is not provided.
+  commit_id:
+    type: string
+    default: ""
+    description: Commit ID used by test command.
+  filter:
+    type: string
+    default: ""
+    description: Filter expression used by run command.
+  query:
+    type: string
+    default: ""
+    description: Query expression used by run command.
+  tag:
+    type: string
+    default: ""
+    description: Tag filter used by run command.
+  priority:
+    type: string
+    default: ""
+    description: Priority filter used by run command.
+  folder:
+    type: string
+    default: ""
+    description: Folder filter used by run command.
+  url:
+    type: string
+    default: ""
+    description: Application URL used by test/run commands.
+  headless:
+    type: boolean
+    default: true
+    description: Whether browsers run in headless mode for test/run commands.
+  session_id:
+    type: string
+    default: ""
+    description: Session ID for summary/archive-report commands.
+  archive:
+    type: boolean
+    default: true
+    description: Whether archive-report should run after test/run commands.
+  minimum_score:
+    type: string
+    default: "75"
+    description: Minimum score gate for test/run commands.
+  workers:
+    type: string
+    default: ""
+    description: Worker count for test/run commands (must be integer > 0 when set).
+  environment:
+    type: string
+    default: ""
+    description: Environment name used by test/run commands.
+  verbose:
+    type: boolean
+    default: false
+    description: Enable verbose output.
+  debug:
+    type: boolean
+    default: false
+    description: Enable debug output.
+steps:
+  - run:
+      name: Run DevAssure command
+      environment:
+        PARAM_COMMAND: << parameters.command >>
+        PARAM_TOKEN: << parameters.token >>
+        PARAM_PATH: << parameters.path >>
+        PARAM_SOURCE: << parameters.source >>
+        PARAM_TARGET: << parameters.target >>
+        PARAM_DEFAULT_BRANCH: << parameters.default_branch >>
+        PARAM_COMMIT_ID: << parameters.commit_id >>
+        PARAM_FILTER: << parameters.filter >>
+        PARAM_QUERY: << parameters.query >>
+        PARAM_TAG: << parameters.tag >>
+        PARAM_PRIORITY: << parameters.priority >>
+        PARAM_FOLDER: << parameters.folder >>
+        PARAM_URL: << parameters.url >>
+        PARAM_HEADLESS: << parameters.headless >>
+        PARAM_SESSION_ID: << parameters.session_id >>
+        PARAM_ARCHIVE: << parameters.archive >>
+        PARAM_MINIMUM_SCORE: << parameters.minimum_score >>
+        PARAM_WORKERS: << parameters.workers >>
+        PARAM_ENVIRONMENT: << parameters.environment >>
+        PARAM_VERBOSE: << parameters.verbose >>
+        PARAM_DEBUG: << parameters.debug >>
+      command: <<include(scripts/run-devassure.sh)>>

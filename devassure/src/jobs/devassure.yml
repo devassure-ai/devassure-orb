@@ -1,0 +1,129 @@
+description: >
+  Run DevAssure CLI workflows in CircleCI with git branch checks, report archiving, and score gating.
+executor:
+  name: default
+  tag: << parameters.executor_tag >>
+parameters:
+  checkout:
+    type: boolean
+    default: true
+    description: Whether to check out repository code before running DevAssure.
+  executor_tag:
+    type: string
+    default: "24.4"
+    description: cimg/node image tag for the default executor.
+  command:
+    type: enum
+    enum: ["setup", "test", "run", "summary", "archive", "archive-report"]
+    default: "test"
+    description: DevAssure command to execute.
+  token:
+    type: string
+    default: ""
+    description: DevAssure token. If empty, command falls back to DEVASSURE_TOKEN.
+  path:
+    type: string
+    default: ""
+    description: Project path used by test/run commands.
+  source:
+    type: string
+    default: ""
+    description: Source branch used by test command.
+  target:
+    type: string
+    default: ""
+    description: Target branch used by test command.
+  default_branch:
+    type: string
+    default: ""
+    description: Default branch used when target is not provided.
+  commit_id:
+    type: string
+    default: ""
+    description: Commit ID used by test command.
+  filter:
+    type: string
+    default: ""
+    description: Filter used by run command.
+  query:
+    type: string
+    default: ""
+    description: Query used by run command.
+  tag:
+    type: string
+    default: ""
+    description: Tag used by run command.
+  priority:
+    type: string
+    default: ""
+    description: Priority used by run command.
+  folder:
+    type: string
+    default: ""
+    description: Folder used by run command.
+  url:
+    type: string
+    default: ""
+    description: URL used by test/run commands.
+  headless:
+    type: boolean
+    default: true
+    description: Whether browser runs in headless mode for test/run commands.
+  session_id:
+    type: string
+    default: ""
+    description: Session ID used by summary/archive-report commands.
+  archive:
+    type: boolean
+    default: true
+    description: Whether archive-report runs after test/run commands.
+  minimum_score:
+    type: string
+    default: "75"
+    description: Minimum score gate for test/run commands.
+  workers:
+    type: string
+    default: ""
+    description: Worker count for test/run commands (integer > 0).
+  environment:
+    type: string
+    default: ""
+    description: Environment name used by test/run commands.
+  verbose:
+    type: boolean
+    default: false
+    description: Enable verbose output.
+  debug:
+    type: boolean
+    default: false
+    description: Enable debug output.
+steps:
+  - when:
+      condition: << parameters.checkout >>
+      steps:
+        - checkout
+  - run-devassure:
+      command: << parameters.command >>
+      token: << parameters.token >>
+      path: << parameters.path >>
+      source: << parameters.source >>
+      target: << parameters.target >>
+      default_branch: << parameters.default_branch >>
+      commit_id: << parameters.commit_id >>
+      filter: << parameters.filter >>
+      query: << parameters.query >>
+      tag: << parameters.tag >>
+      priority: << parameters.priority >>
+      folder: << parameters.folder >>
+      url: << parameters.url >>
+      headless: << parameters.headless >>
+      session_id: << parameters.session_id >>
+      archive: << parameters.archive >>
+      minimum_score: << parameters.minimum_score >>
+      workers: << parameters.workers >>
+      environment: << parameters.environment >>
+      verbose: << parameters.verbose >>
+      debug: << parameters.debug >>
+  - store_artifacts:
+      path: .devassure-artifacts
+      destination: devassure

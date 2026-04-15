@@ -1,0 +1,17 @@
+description: >
+  Run DevAssure test mode with branch-aware configuration and score gate.
+usage:
+  version: 2.1
+  orbs:
+    devassure: devassure/devassure@x.y.z
+  workflows:
+    devassure-validation:
+      jobs:
+        - devassure/devassure:
+            token: $DEVASSURE_TOKEN
+            command: test
+            source: << pipeline.git.branch >>
+            target: main
+            minimum_score: "80"
+            workers: "2"
+            url: "https://example.com"

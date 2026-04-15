@@ -1,0 +1,8 @@
+version: 2.1
+
+description: >
+  Run DevAssure CLI commands in CircleCI with branch-aware test setup, report archiving, and score threshold validation.
+
+display:
+  home_url: "https://devassure.io"
+  source_url: "https://github.com/devassure-ai/devassure-orb"

@@ -1,0 +1,11 @@
+description: >
+  Default DevAssure executor based on CircleCI Node images that satisfy the CLI prerequisite (Node 20+).
+docker:
+  - image: 'cimg/node:<<parameters.tag>>'
+parameters:
+  tag:
+    default: "24.4"
+    description: >
+      cimg/node tag to use. Choose Node 20+ versions:
+      https://hub.docker.com/r/cimg/node/tags
+    type: string
