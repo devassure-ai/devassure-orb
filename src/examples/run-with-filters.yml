@@ -20,3 +20,4 @@ usage:
             environment: qa
             workers: "2"
             headless: false
+            debug: true

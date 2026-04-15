@@ -2,11 +2,17 @@
 set -euo pipefail
 
 bool_to_string() {
-  if [ "$1" = "true" ]; then
+  if is_true "$1"; then
     echo "true"
   else
     echo "false"
   fi
+}
+
+is_true() {
+  local value
+  value="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | xargs)"
+  [ "$value" = "true" ]
 }
 
 add_arg() {
@@ -18,13 +24,13 @@ add_arg() {
 }
 
 add_verbose_arg() {
-  if [ "${PARAM_VERBOSE}" = "true" ]; then
+  if is_true "${PARAM_VERBOSE}"; then
     cmd="$cmd --verbose"
   fi
 }
 
 add_debug_arg() {
-  if [ "${PARAM_DEBUG}" = "true" ]; then
+  if is_true "${PARAM_DEBUG}"; then
     cmd="$cmd --debug"
   fi
 }
@@ -210,13 +216,13 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
   echo "Printing summary for last session..."
   devassure summary --last
 
-  if [ "$PARAM_ARCHIVE" = "true" ]; then
+  if is_true "$PARAM_ARCHIVE"; then
     archive_log_file="$(mktemp)"
     archive_cmd="devassure archive-report --last --output-dir \"$PWD\""
-    if [ "$PARAM_VERBOSE" = "true" ]; then
+    if is_true "$PARAM_VERBOSE"; then
       archive_cmd="$archive_cmd --verbose"
     fi
-    if [ "$PARAM_DEBUG" = "true" ]; then
+    if is_true "$PARAM_DEBUG"; then
       archive_cmd="$archive_cmd --debug"
     fi
     eval "$archive_cmd" | tee "$archive_log_file"

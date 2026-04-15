@@ -15,6 +15,8 @@ usage:
             command: test
             source: << pipeline.git.branch >>
             target: main
+            debug: true
+            verbose: false
             minimum_score: "80"
             workers: "2"
             url: "https://example.com"
