@@ -34,19 +34,15 @@ add_arg() {
   local arg_name="$1"
   local arg_value="$2"
   if [ -n "$arg_value" ]; then
-    cmd="$cmd --${arg_name}=\"${arg_value}\""
+    cmd+=( "--${arg_name}=${arg_value}" )
   fi
 }
 
-add_verbose_arg() {
-  if is_true "${normalized_verbose}"; then
-    cmd="$cmd --verbose"
-  fi
-}
-
-add_debug_arg() {
-  if is_true "${normalized_debug}"; then
-    cmd="$cmd --debug"
+add_flag() {
+  local enabled="$1"
+  local flag_name="$2"
+  if is_true "$enabled"; then
+    cmd+=( "--${flag_name}" )
   fi
 }
 
@@ -99,6 +95,11 @@ npm i -g @devassure/cli@1
 
 echo "DevAssure CLI version:"
 devassure version
+
+echo "Debug PARAM_HEADLESS: ${PARAM_HEADLESS:-}"
+echo "Debug PARAM_ARCHIVE: ${PARAM_ARCHIVE:-}"
+echo "Debug PARAM_VERBOSE: ${PARAM_VERBOSE:-}"
+echo "Debug PARAM_DEBUG: ${PARAM_DEBUG:-}"
 
 resolved_token="$PARAM_TOKEN"
 if [[ "$resolved_token" =~ ^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$ ]]; then
@@ -159,11 +160,10 @@ if [ "$command_name" = "test" ]; then
   fi
 fi
 
-cmd="devassure $command_name"
 if [ "$command_name" = "archive" ]; then
   command_name="archive-report"
-  cmd="devassure $command_name"
 fi
+cmd=(devassure "$command_name")
 
 if [ -n "$PARAM_WORKERS" ]; then
   if ! [[ "$PARAM_WORKERS" =~ ^[0-9]+$ ]] || [ "$PARAM_WORKERS" -le 0 ]; then
@@ -179,8 +179,8 @@ normalized_debug="$(normalize_boolean "$PARAM_DEBUG" "false")"
 
 case "$command_name" in
   setup)
-    add_verbose_arg
-    add_debug_arg
+    add_flag "$normalized_verbose" "verbose"
+    add_flag "$normalized_debug" "debug"
     ;;
   test)
     add_arg "path" "$PARAM_PATH"
@@ -190,9 +190,9 @@ case "$command_name" in
     add_arg "url" "$PARAM_URL"
     add_arg "workers" "$PARAM_WORKERS"
     add_arg "environment" "$PARAM_ENVIRONMENT"
-    cmd="$cmd --headless=\"$(bool_to_string "$normalized_headless")\""
-    add_verbose_arg
-    add_debug_arg
+    cmd+=( "--headless=$(bool_to_string "$normalized_headless")" )
+    add_flag "$normalized_verbose" "verbose"
+    add_flag "$normalized_debug" "debug"
     ;;
   run)
     add_arg "path" "$PARAM_PATH"
@@ -204,32 +204,34 @@ case "$command_name" in
     add_arg "url" "$PARAM_URL"
     add_arg "workers" "$PARAM_WORKERS"
     add_arg "environment" "$PARAM_ENVIRONMENT"
-    cmd="$cmd --headless=\"$(bool_to_string "$normalized_headless")\""
-    add_verbose_arg
-    add_debug_arg
+    cmd+=( "--headless=$(bool_to_string "$normalized_headless")" )
+    add_flag "$normalized_verbose" "verbose"
+    add_flag "$normalized_debug" "debug"
     ;;
   summary)
     if [ -n "$PARAM_SESSION_ID" ]; then
-      cmd="$cmd --session_id=\"$PARAM_SESSION_ID\""
+      cmd+=( "--session_id=${PARAM_SESSION_ID}" )
     else
-      cmd="$cmd --last"
+      cmd+=( "--last" )
     fi
-    add_verbose_arg
-    add_debug_arg
+    add_flag "$normalized_verbose" "verbose"
+    add_flag "$normalized_debug" "debug"
     ;;
   archive-report)
     if [ -n "$PARAM_SESSION_ID" ]; then
-      cmd="$cmd --session_id=\"$PARAM_SESSION_ID\""
+      cmd+=( "--session_id=${PARAM_SESSION_ID}" )
     else
-      cmd="$cmd --last"
+      cmd+=( "--last" )
     fi
-    add_verbose_arg
-    add_debug_arg
+    add_flag "$normalized_verbose" "verbose"
+    add_flag "$normalized_debug" "debug"
     ;;
 esac
 
-echo "Running: $cmd"
-eval "$cmd"
+printf 'Running:'
+printf ' %q' "${cmd[@]}"
+printf '\n'
+"${cmd[@]}"
 
 archive_path=""
 if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
@@ -238,14 +240,17 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
 
   if is_true "$normalized_archive"; then
     archive_log_file="$(mktemp)"
-    archive_cmd="devassure archive-report --last --output-dir \"$PWD\""
+    archive_cmd=(devassure archive-report --last "--output-dir=$PWD")
     if is_true "$normalized_verbose"; then
-      archive_cmd="$archive_cmd --verbose"
+      archive_cmd+=( "--verbose" )
     fi
     if is_true "$normalized_debug"; then
-      archive_cmd="$archive_cmd --debug"
+      archive_cmd+=( "--debug" )
     fi
-    eval "$archive_cmd" | tee "$archive_log_file"
+    printf 'Running:'
+    printf ' %q' "${archive_cmd[@]}"
+    printf '\n'
+    "${archive_cmd[@]}" | tee "$archive_log_file"
 
     archive_path="$(awk -F 'Test reports are archived in ' '/Test reports are archived in / { print $2 }' "$archive_log_file" | awk 'NF { last = $0 } END { print last }')"
     if [ -z "$archive_path" ]; then

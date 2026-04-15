@@ -1,6 +1,10 @@
 description: >
   Install and run DevAssure CLI commands with branch checks, summary, score validation, and optional report archiving.
 parameters:
+  checkout:
+    type: boolean
+    default: true
+    description: Whether to check out repository code before running DevAssure.
   command:
     type: enum
     enum: ["setup", "test", "run", "summary", "archive", "archive-report"]
@@ -87,6 +91,10 @@ parameters:
     default: false
     description: Enable debug output.
 steps:
+  - when:
+      condition: << parameters.checkout >>
+      steps:
+        - checkout
   - run:
       name: Run DevAssure command
       environment:
@@ -103,12 +111,15 @@ steps:
         PARAM_PRIORITY: << parameters.priority >>
         PARAM_FOLDER: << parameters.folder >>
         PARAM_URL: << parameters.url >>
-        PARAM_HEADLESS: << parameters.headless >>
+        PARAM_HEADLESS: "<<# parameters.headless >>true<</ parameters.headless >><<^ parameters.headless >>false<</ parameters.headless >>"
         PARAM_SESSION_ID: << parameters.session_id >>
-        PARAM_ARCHIVE: << parameters.archive >>
+        PARAM_ARCHIVE: "<<# parameters.archive >>true<</ parameters.archive >><<^ parameters.archive >>false<</ parameters.archive >>"
         PARAM_MINIMUM_SCORE: << parameters.minimum_score >>
         PARAM_WORKERS: << parameters.workers >>
         PARAM_ENVIRONMENT: << parameters.environment >>
-        PARAM_VERBOSE: << parameters.verbose >>
-        PARAM_DEBUG: << parameters.debug >>
+        PARAM_VERBOSE: "<<# parameters.verbose >>true<</ parameters.verbose >><<^ parameters.verbose >>false<</ parameters.verbose >>"
+        PARAM_DEBUG: "<<# parameters.debug >>true<</ parameters.debug >><<^ parameters.debug >>false<</ parameters.debug >>"
       command: <<include(scripts/run-devassure.sh)>>
+  - store_artifacts:
+      path: .devassure-artifacts
+      destination: devassure

@@ -98,11 +98,8 @@ parameters:
     default: false
     description: Enable debug output.
 steps:
-  - when:
-      condition: << parameters.checkout >>
-      steps:
-        - checkout
   - devassure:
+      checkout: << parameters.checkout >>
       command: << parameters.command >>
       token: << parameters.token >>
       path: << parameters.path >>
@@ -124,6 +121,3 @@ steps:
       environment: << parameters.environment >>
       verbose: << parameters.verbose >>
       debug: << parameters.debug >>
-  - store_artifacts:
-      path: .devassure-artifacts
-      destination: devassure
