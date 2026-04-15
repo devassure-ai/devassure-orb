@@ -1,6 +1,23 @@
 #!/bin/bash
 set -euo pipefail
 
+normalize_boolean() {
+  local value
+  value="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | xargs)"
+  local default_value="${2:-false}"
+  case "$value" in
+    true|1)
+      echo "true"
+      ;;
+    false|0)
+      echo "false"
+      ;;
+    *)
+      echo "$default_value"
+      ;;
+  esac
+}
+
 bool_to_string() {
   if is_true "$1"; then
     echo "true"
@@ -10,9 +27,7 @@ bool_to_string() {
 }
 
 is_true() {
-  local value
-  value="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | xargs)"
-  [ "$value" = "true" ]
+  [ "$(normalize_boolean "$1")" = "true" ]
 }
 
 add_arg() {
@@ -24,13 +39,13 @@ add_arg() {
 }
 
 add_verbose_arg() {
-  if is_true "${PARAM_VERBOSE}"; then
+  if is_true "${normalized_verbose}"; then
     cmd="$cmd --verbose"
   fi
 }
 
 add_debug_arg() {
-  if is_true "${PARAM_DEBUG}"; then
+  if is_true "${normalized_debug}"; then
     cmd="$cmd --debug"
   fi
 }
@@ -157,6 +172,11 @@ if [ -n "$PARAM_WORKERS" ]; then
   fi
 fi
 
+normalized_headless="$(normalize_boolean "$PARAM_HEADLESS" "true")"
+normalized_archive="$(normalize_boolean "$PARAM_ARCHIVE" "true")"
+normalized_verbose="$(normalize_boolean "$PARAM_VERBOSE" "false")"
+normalized_debug="$(normalize_boolean "$PARAM_DEBUG" "false")"
+
 case "$command_name" in
   setup)
     add_verbose_arg
@@ -170,7 +190,7 @@ case "$command_name" in
     add_arg "url" "$PARAM_URL"
     add_arg "workers" "$PARAM_WORKERS"
     add_arg "environment" "$PARAM_ENVIRONMENT"
-    cmd="$cmd --headless=\"$(bool_to_string "$PARAM_HEADLESS")\""
+    cmd="$cmd --headless=\"$(bool_to_string "$normalized_headless")\""
     add_verbose_arg
     add_debug_arg
     ;;
@@ -184,7 +204,7 @@ case "$command_name" in
     add_arg "url" "$PARAM_URL"
     add_arg "workers" "$PARAM_WORKERS"
     add_arg "environment" "$PARAM_ENVIRONMENT"
-    cmd="$cmd --headless=\"$(bool_to_string "$PARAM_HEADLESS")\""
+    cmd="$cmd --headless=\"$(bool_to_string "$normalized_headless")\""
     add_verbose_arg
     add_debug_arg
     ;;
@@ -216,13 +236,13 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
   echo "Printing summary for last session..."
   devassure summary --last
 
-  if is_true "$PARAM_ARCHIVE"; then
+  if is_true "$normalized_archive"; then
     archive_log_file="$(mktemp)"
     archive_cmd="devassure archive-report --last --output-dir \"$PWD\""
-    if is_true "$PARAM_VERBOSE"; then
+    if is_true "$normalized_verbose"; then
       archive_cmd="$archive_cmd --verbose"
     fi
-    if is_true "$PARAM_DEBUG"; then
+    if is_true "$normalized_debug"; then
       archive_cmd="$archive_cmd --debug"
     fi
     eval "$archive_cmd" | tee "$archive_log_file"
