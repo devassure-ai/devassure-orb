@@ -35,7 +35,7 @@ CircleCI orb to run [@devassure/cli](https://www.npmjs.com/package/@devassure/cl
 ```yaml
 version: 2.1
 orbs:
-  devassure: devassure/devassure@x.y.z
+  devassure: devassure/devassure@1
 
 workflows:
   validate:
@@ -49,7 +49,7 @@ workflows:
 ```yaml
 version: 2.1
 orbs:
-  devassure: devassure/devassure@x.y.z
+  devassure: devassure/devassure@1
 
 workflows:
   validate:
@@ -73,7 +73,7 @@ workflows:
 ```yaml
 version: 2.1
 orbs:
-  devassure: devassure/devassure@x.y.z
+  devassure: devassure/devassure@1
 
 workflows:
   runFilteredTests:

@@ -3,7 +3,7 @@ description: >
 usage:
   version: 2.1
   orbs:
-    devassure: devassure/devassure@x.y.z
+    devassure: devassure/devassure@1
   workflows:
     devassure-filtered-run:
       jobs:

@@ -93,6 +93,9 @@ fi
 echo "Installing DevAssure CLI..."
 npm i -g @devassure/cli@1
 
+# Ensure CircleCI store_artifacts always has a valid source path.
+mkdir -p .devassure-artifacts
+
 echo "DevAssure CLI version:"
 devassure version
 
@@ -255,12 +258,19 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
     archive_path="$(awk -F 'Test reports are archived in ' '/Test reports are archived in / { print $2 }' "$archive_log_file" | awk 'NF { last = $0 } END { print last }')"
     if [ -z "$archive_path" ]; then
       echo "Error: Could not parse archived report path from devassure output." >&2
-      exit 1
-    fi
-    if [ ! -e "$archive_path" ]; then
+    elif [ ! -e "$archive_path" ]; then
       echo "Error: Parsed archive path does not exist: $archive_path" >&2
-      exit 1
+    else
+      echo "Copying archive to .devassure-artifacts/..."
+      if [ -f "$archive_path" ]; then
+        cp "$archive_path" .devassure-artifacts/
+      elif [ -d "$archive_path" ]; then
+        cp "$archive_path"/*.zip .devassure-artifacts/ 2>/dev/null || true
+      fi
+      echo "Listing .devassure-artifacts/..."
+      ls -la .devassure-artifacts/
     fi
+
   fi
 
   minimum_score="$(printf '%s' "$PARAM_MINIMUM_SCORE" | xargs)"
@@ -284,9 +294,4 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
   else
     echo "Skipping score check: minimum_score '$minimum_score' is not a valid positive number."
   fi
-fi
-
-mkdir -p .devassure-artifacts
-if [ -n "$archive_path" ]; then
-  printf '%s\n' "$archive_path" > .devassure-artifacts/archive_path.txt
 fi
