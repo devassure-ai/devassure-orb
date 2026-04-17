@@ -168,7 +168,7 @@ if [ "$command_name" = "archive" ]; then
 fi
 cmd=(devassure "$command_name" --no-ui)
 
-if [ -n "$PARAM_WORKERS" ]; then
+if [ -n "$PARAM_WORKERS" ] && [ "$PARAM_WORKERS" != "0" ]; then
   if ! [[ "$PARAM_WORKERS" =~ ^[0-9]+$ ]] || [ "$PARAM_WORKERS" -le 0 ]; then
     echo "Error: workers must be an integer greater than 0. Received '$PARAM_WORKERS'." >&2
     exit 1

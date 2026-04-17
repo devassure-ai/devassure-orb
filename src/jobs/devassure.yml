@@ -78,13 +78,13 @@ parameters:
     default: true
     description: Whether archive-report runs after test/run commands.
   minimum_score:
-    type: string
-    default: "75"
+    type: number
+    default: 75
     description: Minimum score gate for test/run commands.
   workers:
-    type: string
-    default: ""
-    description: Worker count for test/run commands (integer > 0).
+    type: integer
+    default: 0
+    description: Worker count for test/run commands (integer > 0, 0 disables).
   environment:
     type: string
     default: ""

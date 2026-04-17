@@ -64,8 +64,8 @@ workflows:
           commit_id: << pipeline.git.revision >>
           url: https://example.com
           environment: staging
-          workers: "2"
-          minimum_score: "80"
+          workers: 2
+          minimum_score: 80
           headless: true
 ```
 
@@ -90,7 +90,7 @@ workflows:
           folder: reports
           url: https://example.com
           environment: qa
-          workers: "2"
+          workers: 2
           headless: false
 ```
 
@@ -138,8 +138,8 @@ If `session_id` is not set, the orb runs `devassure archive-report --last`.
 | `headless` | `true` | Headless browser mode flag for `test` and `run` |
 | `session_id` | _empty_ | Session id for `summary` or `archive`/`archive-report` (uses latest session when empty) |
 | `archive` | `true` | For `test`/`run`, set to `false` to skip `archive-report --last` |
-| `minimum_score` | `75` | Minimum score threshold for `test`/`run`; job fails when summary score is below this value |
-| `workers` | _empty_ | Worker count for `test`/`run`; when set, must be an integer greater than `0` |
+| `minimum_score` | `75` | Minimum score threshold for `test`/`run`; accepts integers/decimals and job fails when summary score is below this value |
+| `workers` | `0` | Worker count for `test`/`run`; use an integer greater than `0` to enable, keep `0` to default to project setting |
 | `environment` | _empty_ | Environment name passed to `test`/`run` (for example `staging`, `qa`, or `production`) |
 | `verbose` | `false` | Enables `--verbose` logging |
 | `debug` | `false` | Enables `--debug` logging |

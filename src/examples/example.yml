@@ -17,8 +17,8 @@ usage:
             target: main
             debug: true
             verbose: false
-            minimum_score: "80"
-            workers: "2"
+            minimum_score: 80
+            workers: 4
             url: "https://example.com"
   workflows:
     devassure-step-example:

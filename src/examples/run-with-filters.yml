@@ -18,6 +18,6 @@ usage:
             folder: regression
             url: "https://example.com"
             environment: qa
-            workers: "2"
+            workers: 2
             headless: false
             debug: true
