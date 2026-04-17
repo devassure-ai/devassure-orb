@@ -97,7 +97,7 @@ npm i -g @devassure/cli@1
 mkdir -p .devassure-artifacts
 
 echo "DevAssure CLI version:"
-devassure version
+devassure version --no-ui
 
 echo "Debug PARAM_HEADLESS: ${PARAM_HEADLESS:-}"
 echo "Debug PARAM_ARCHIVE: ${PARAM_ARCHIVE:-}"
@@ -122,7 +122,7 @@ if [ -z "$resolved_token" ]; then
   exit 1
 fi
 
-devassure add-token "$resolved_token"
+devassure add-token "$resolved_token" --no-ui
 
 command_name="$PARAM_COMMAND"
 case "$command_name" in
@@ -166,7 +166,7 @@ fi
 if [ "$command_name" = "archive" ]; then
   command_name="archive-report"
 fi
-cmd=(devassure "$command_name")
+cmd=(devassure "$command_name" --no-ui)
 
 if [ -n "$PARAM_WORKERS" ]; then
   if ! [[ "$PARAM_WORKERS" =~ ^[0-9]+$ ]] || [ "$PARAM_WORKERS" -le 0 ]; then
@@ -239,11 +239,24 @@ printf '\n'
 archive_path=""
 if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
   echo "Printing summary for last session..."
-  devassure summary --last
+  devassure summary --last --no-ui
+
+  echo "Exporting JUnit XML report to .devassure-artifacts/"
+  export_cmd=(devassure export-report --output-dir ".devassure-artifacts/" --last --format junit-xml --no-ui)
+  if is_true "$normalized_verbose"; then
+    export_cmd+=( "--verbose" )
+  fi
+  if is_true "$normalized_debug"; then
+    export_cmd+=( "--debug" )
+  fi
+  printf 'Running:'
+  printf ' %q' "${export_cmd[@]}"
+  printf '\n'
+  "${export_cmd[@]}"
 
   if is_true "$normalized_archive"; then
     archive_log_file="$(mktemp)"
-    archive_cmd=(devassure archive-report --last "--output-dir=$PWD")
+    archive_cmd=(devassure archive-report --last "--output-dir=.devassure-artifacts/" --no-ui)
     if is_true "$normalized_verbose"; then
       archive_cmd+=( "--verbose" )
     fi
@@ -253,30 +266,16 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
     printf 'Running:'
     printf ' %q' "${archive_cmd[@]}"
     printf '\n'
-    "${archive_cmd[@]}" | tee "$archive_log_file"
-
-    archive_path="$(awk -F 'Test reports are archived in ' '/Test reports are archived in / { print $2 }' "$archive_log_file" | awk 'NF { last = $0 } END { print last }')"
-    if [ -z "$archive_path" ]; then
-      echo "Error: Could not parse archived report path from devassure output." >&2
-    elif [ ! -e "$archive_path" ]; then
-      echo "Error: Parsed archive path does not exist: $archive_path" >&2
-    else
-      echo "Copying archive to .devassure-artifacts/..."
-      if [ -f "$archive_path" ]; then
-        cp "$archive_path" .devassure-artifacts/
-      elif [ -d "$archive_path" ]; then
-        cp "$archive_path"/*.zip .devassure-artifacts/ 2>/dev/null || true
-      fi
-      echo "Listing .devassure-artifacts/..."
-      ls -la .devassure-artifacts/
-    fi
-
+    "${archive_cmd[@]}"
   fi
+
+  echo "Listing .devassure-artifacts/"
+  ls -la .devassure-artifacts/
 
   minimum_score="$(printf '%s' "$PARAM_MINIMUM_SCORE" | xargs)"
   if [[ "$minimum_score" =~ ^[0-9]+([.][0-9]+)?$ ]] && awk -v value="$minimum_score" 'BEGIN { exit !(value > 0) }'; then
     summary_log_file="$(mktemp)"
-    devassure summary --last | tee "$summary_log_file"
+    devassure summary --last --no-ui | tee "$summary_log_file"
     score_value="$(awk -F 'score:' '/score:/ { print $2; exit }' "$summary_log_file" | xargs)"
 
     if [ -z "$score_value" ] || [ "$score_value" = "N/A" ]; then

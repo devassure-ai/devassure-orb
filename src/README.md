@@ -15,6 +15,7 @@ CircleCI orb to run [@devassure/cli](https://www.npmjs.com/package/@devassure/cl
   - prints `devassure summary --last`
   - validates score threshold (`minimum_score`, default `75`)
   - optionally runs `archive-report` and stores artifacts.
+  - publishes JUnit test results so they are visible in the CircleCI **Tests** tab.
 
 ## Create a DevAssure token
 
@@ -119,29 +120,29 @@ If `session_id` is not set, the orb runs `devassure archive-report --last`.
 
 | Parameter | Default | Description |
 | --- | --- | --- |
-| `checkout` | `true` | Run `checkout` before execution |
-| `executor_tag` | `24.4` | `cimg/node` tag for default executor |
-| `command` | `test` | `setup`, `test`, `run`, `summary`, `archive`, `archive-report` |
-| `token` | _empty_ | DevAssure token. Fallback: `DEVASSURE_TOKEN` |
-| `path` | _empty_ | Used by `test`, `run` |
-| `source` | _empty_ | Used by `test` |
-| `target` | _empty_ | Used by `test` |
-| `default_branch` | _empty_ | Used by `test` when `target` is unset |
-| `commit_id` | _empty_ | Used by `test` |
-| `filter` | _empty_ | Used by `run` |
-| `query` | _empty_ | Used by `run` |
-| `tag` | _empty_ | Used by `run` |
-| `priority` | _empty_ | Used by `run` |
-| `folder` | _empty_ | Used by `run` |
-| `url` | _empty_ | Used by `test`, `run` |
-| `headless` | `true` | Used by `test`, `run`; always passed |
-| `session_id` | _empty_ | Used by `summary`, `archive`, `archive-report` |
-| `archive` | `true` | For `test`/`run`, run `archive-report --last` |
-| `minimum_score` | `75` | For `test`/`run`, score gate using `summary --last` |
-| `workers` | _empty_ | For `test`/`run`, must be integer > 0 when set |
-| `environment` | _empty_ | Environment for `test`, `run` |
-| `verbose` | `false` | Enable `--verbose` |
-| `debug` | `false` | Enable `--debug` |
+| `checkout` | `true` | Runs CircleCI `checkout` step before DevAssure execution |
+| `executor_tag` | `24.4` | `cimg/node` image tag used by the orb's default executor |
+| `command` | `test` | DevAssure command to execute: `setup`, `test`, `run`, `summary`, `archive`, or `archive-report` |
+| `token` | _empty_ | DevAssure API token. If empty, falls back to `DEVASSURE_TOKEN` environment variable |
+| `path` | _empty_ | Relative project path to test/run (useful in monorepos) |
+| `source` | _empty_ | Source branch for `test` command scope |
+| `target` | _empty_ | Target branch for `test` command scope |
+| `default_branch` | _empty_ | Default branch fallback used by `test` when `target` is not provided |
+| `commit_id` | _empty_ | Commit SHA for `test` command scope |
+| `filter` | _empty_ | Filter expression for selecting tests in `run` command |
+| `query` | _empty_ | Query string for selecting tests in `run` command |
+| `tag` | _empty_ | Tag selector for `run` command |
+| `priority` | _empty_ | Priority selector for `run` command |
+| `folder` | _empty_ | Folder selector for `run` command |
+| `url` | _empty_ | Application URL under test for `test` and `run` commands |
+| `headless` | `true` | Headless browser mode flag for `test` and `run` |
+| `session_id` | _empty_ | Session id for `summary` or `archive`/`archive-report` (uses latest session when empty) |
+| `archive` | `true` | For `test`/`run`, set to `false` to skip `archive-report --last` |
+| `minimum_score` | `75` | Minimum score threshold for `test`/`run`; job fails when summary score is below this value |
+| `workers` | _empty_ | Worker count for `test`/`run`; when set, must be an integer greater than `0` |
+| `environment` | _empty_ | Environment name passed to `test`/`run` (for example `staging`, `qa`, or `production`) |
+| `verbose` | `false` | Enables `--verbose` logging |
+| `debug` | `false` | Enables `--debug` logging |
 
 ## Branch Safety Behavior (`command: test`)
 

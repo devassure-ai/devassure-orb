@@ -120,6 +120,8 @@ steps:
         PARAM_VERBOSE: "<<# parameters.verbose >>true<</ parameters.verbose >><<^ parameters.verbose >>false<</ parameters.verbose >>"
         PARAM_DEBUG: "<<# parameters.debug >>true<</ parameters.debug >><<^ parameters.debug >>false<</ parameters.debug >>"
       command: <<include(scripts/run-devassure.sh)>>
+  - store_test_results:
+      path: .devassure-artifacts
   - store_artifacts:
       path: .devassure-artifacts
       destination: devassure
