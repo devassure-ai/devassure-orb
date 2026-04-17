@@ -76,6 +76,7 @@ parameters:
     description: Minimum score gate for test/run commands.
   workers:
     type: integer
+    default: 0
     description: Worker count for test/run commands (must be integer > 0 when set).
   environment:
     type: string
