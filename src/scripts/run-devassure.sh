@@ -273,7 +273,7 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
   ls -la .devassure-artifacts/
 
   minimum_score="$(printf '%s' "$PARAM_MINIMUM_SCORE" | xargs)"
-  if [[ "$minimum_score" =~ ^[0-9]+([.][0-9]+)?$ ]] && awk -v value="$minimum_score" 'BEGIN { exit !(value > 0) }'; then
+  if [[ "$minimum_score" =~ ^[0-9]+$ ]] && [ "$minimum_score" -gt 0 ]; then
     summary_log_file="$(mktemp)"
     devassure summary --last --no-ui | tee "$summary_log_file"
     score_value="$(awk -F 'score:' '/score:/ { print $2; exit }' "$summary_log_file" | xargs)"
@@ -291,6 +291,6 @@ if [ "$PARAM_COMMAND" = "test" ] || [ "$PARAM_COMMAND" = "run" ]; then
       exit 1
     fi
   else
-    echo "Skipping score check: minimum_score '$minimum_score' is not a valid positive number."
+    echo "Skipping score check: minimum_score '$minimum_score' is not a valid positive integer."
   fi
 fi

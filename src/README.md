@@ -138,7 +138,7 @@ If `session_id` is not set, the orb runs `devassure archive-report --last`.
 | `headless` | `true` | Headless browser mode flag for `test` and `run` |
 | `session_id` | _empty_ | Session id for `summary` or `archive`/`archive-report` (uses latest session when empty) |
 | `archive` | `true` | For `test`/`run`, set to `false` to skip `archive-report --last` |
-| `minimum_score` | `75` | Minimum score threshold for `test`/`run`; accepts integers/decimals and job fails when summary score is below this value |
+| `minimum_score` | `75` | Minimum score threshold for `test`/`run`; accepts positive integers and job fails when summary score is below this value |
 | `workers` | `0` | Worker count for `test`/`run`; use an integer greater than `0` to enable, keep `0` to default to project setting |
 | `environment` | _empty_ | Environment name passed to `test`/`run` (for example `staging`, `qa`, or `production`) |
 | `verbose` | `false` | Enables `--verbose` logging |
@@ -158,7 +158,7 @@ If `session_id` is not set, the orb runs `devassure archive-report --last`.
 
 - Artifacts are stored under `.devassure-artifacts`.
 - If archive runs successfully, `.devassure-artifacts/archive_path.txt` contains the generated path.
-- Score gate runs for `test`/`run` when `minimum_score` is a valid positive number.
+- Score gate runs for `test`/`run` when `minimum_score` is a valid positive integer.
 - The job fails when score is missing, `N/A`, non-numeric, or below the threshold.
 
 ## Runner sizing recommendation
