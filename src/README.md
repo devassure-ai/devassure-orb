@@ -139,7 +139,7 @@ If `session_id` is not set, the orb runs `devassure archive-report --last`.
 | `session_id` | _empty_ | Session id for `summary` or `archive`/`archive-report` (uses latest session when empty) |
 | `archive` | `true` | For `test`/`run`, set to `false` to skip `archive-report --last` |
 | `minimum_score` | `75` | Minimum score threshold for `test`/`run`; accepts positive integers and job fails when summary score is below this value |
-| `workers` | `0` | Worker count for `test`/`run`; use an integer greater than `0` to enable, keep `0` to default to project setting |
+| `workers` | _empty_ | Worker count for `test`/`run`; when set, must be an integer greater than `0` |
 | `environment` | _empty_ | Environment name passed to `test`/`run` (for example `staging`, `qa`, or `production`) |
 | `verbose` | `false` | Enables `--verbose` logging |
 | `debug` | `false` | Enables `--debug` logging |

@@ -175,6 +175,11 @@ if [ -n "$PARAM_WORKERS" ] && [ "$PARAM_WORKERS" != "0" ]; then
   fi
 fi
 
+effective_workers="$PARAM_WORKERS"
+if [ "$effective_workers" = "0" ]; then
+  effective_workers=""
+fi
+
 normalized_headless="$(normalize_boolean "$PARAM_HEADLESS" "true")"
 normalized_archive="$(normalize_boolean "$PARAM_ARCHIVE" "true")"
 normalized_verbose="$(normalize_boolean "$PARAM_VERBOSE" "false")"
@@ -191,7 +196,7 @@ case "$command_name" in
     add_arg "target" "$PARAM_TARGET"
     add_arg "commit_id" "$PARAM_COMMIT_ID"
     add_arg "url" "$PARAM_URL"
-    add_arg "workers" "$PARAM_WORKERS"
+    add_arg "workers" "$effective_workers"
     add_arg "environment" "$PARAM_ENVIRONMENT"
     cmd+=( "--headless=$(bool_to_string "$normalized_headless")" )
     add_flag "$normalized_verbose" "verbose"
@@ -205,7 +210,7 @@ case "$command_name" in
     add_arg "priority" "$PARAM_PRIORITY"
     add_arg "folder" "$PARAM_FOLDER"
     add_arg "url" "$PARAM_URL"
-    add_arg "workers" "$PARAM_WORKERS"
+    add_arg "workers" "$effective_workers"
     add_arg "environment" "$PARAM_ENVIRONMENT"
     cmd+=( "--headless=$(bool_to_string "$normalized_headless")" )
     add_flag "$normalized_verbose" "verbose"
