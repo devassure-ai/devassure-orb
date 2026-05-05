@@ -18,15 +18,15 @@ CircleCI orb for running [@devassure/cli](https://www.npmjs.com/package/@devassu
 
 ## Before vs After DevAssure O2
 
-**Before:**
-❌ Write & maintain test scripts
-❌ Run full regression suite
-❌ Miss edge cases
+**Before:**  
+❌ Write & maintain test scripts  
+❌ Run full regression suite  
+❌ Miss edge cases  
 
-**After DevAssure O2:**
-✅ Tests generated from PR diff
-✅ Only impacted areas tested
-✅ Bugs caught before merge
+**After DevAssure O2:**  
+✅ Tests generated from PR diff  
+✅ Only impacted areas tested  
+✅ Bugs caught before merge  
 
 Learn more about DevAssure O2 [here](https://devassure.io).
 
@@ -216,11 +216,7 @@ For `test` and `run`, score is validated using `devassure summary --last`:
 
 ### How does minimum score work?
 
-The minimum score is the lowest score that still passes the job. The default is `75`.
-
-- If the score is below minimum, the job fails.
-- If the score is equal to or above minimum, the job passes.
-- Set `minimum_score` to `0` to disable validation.
+The minimum score is the lowest score that still passes the job. The default is `75`. If the score is below minimum, the job fails. If the score is equal to or above minimum, the job passes. Set `minimum_score` to `0` to disable validation.
 
 ### How are credits consumed?
 
